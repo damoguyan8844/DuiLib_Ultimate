@@ -8,6 +8,7 @@ public:
 	CDemoFrame() 
 	{
 		m_pPopWnd = NULL;
+		m_pMenu = NULL;
 	}
 
 public:
@@ -83,7 +84,7 @@ public:
 
 	DuiLib::CDuiString GetSkinFile()
 	{
-		return _T("main.xml");
+		return _T("XML_MAIN");
 	}
 
 	UILIB_RESOURCETYPE GetResourceType() const
@@ -119,6 +120,35 @@ public:
 	void OnFinalMessage(HWND hWnd)
 	{ 
 		delete this;
+	}
+
+	LPCTSTR QueryControlText(LPCTSTR lpstrId, LPCTSTR lpstrType)
+	{
+		CDuiString sLanguage = CResourceManager::GetInstance()->GetLanguage();
+		if(sLanguage == _T("en")){
+			if(lstrcmpi(lpstrId, _T("lantext")) == 0) {
+				return _T("Switch to Chinese");
+			}
+			else if(lstrcmpi(lpstrId, _T("titletext")) == 0) {
+				return _T("Duilib Demo v1.1");
+			}
+			else if(lstrcmpi(lpstrId, _T("hometext")) == 0) {
+				return _T("{a}Home Page{/a}");
+			}
+		}
+		else{
+			if(lstrcmpi(lpstrId, _T("lantext")) == 0) {
+				return _T("切换到英文");
+			}
+			else if(lstrcmpi(lpstrId, _T("titletext")) == 0) {
+				return _T("Duilib 使用演示 v1.1");
+			}
+			else if(lstrcmpi(lpstrId, _T("hometext")) == 0) {
+				return _T("{a}演示官网{/a}");
+			}
+		}
+
+		return NULL;
 	}
 
 	void Notify(TNotifyUI& msg)
@@ -185,8 +215,11 @@ public:
 		else if(sName.CompareNoCase(_T("button1")) == 0)
 		{
 			CEditUI* pEdit = static_cast<CEditUI*>(m_PaintManager.FindControl(_T("edit3")));
-			double fEdit = _ttof(pEdit->GetText().GetData());
-			MessageBox(m_hWnd, pEdit->GetText(), _T(""), 0);
+			TCHAR* pstrText = (TCHAR*)pEdit->GetText().GetData();
+			if(pstrText != NULL && lstrlen(pstrText) > 0) {
+				double fEdit = _ttof(pstrText);
+				MessageBox(m_hWnd, pstrText, _T(""), 0);
+			}
 		}
 		else if(sName.CompareNoCase(_T("popwnd_btn")) == 0)
 		{
@@ -219,12 +252,16 @@ public:
 		}
 		else if(sName.CompareNoCase(_T("menubtn")) == 0)
 		{
-			CMenuWnd* pMenu = new CMenuWnd();
+			if(m_pMenu != NULL) {
+				delete m_pMenu;
+				m_pMenu = NULL;
+			}
+			m_pMenu = new CMenuWnd();
 			CDuiPoint point;
 			::GetCursorPos(&point);
 			
-			pMenu->Init(NULL, _T("menu.xml"), point, &m_PaintManager);
-			CMenuUI* rootMenu = pMenu->GetMenuUI();
+			m_pMenu->Init(NULL, _T("menu.xml"), point, &m_PaintManager);
+			CMenuUI* rootMenu = m_pMenu->GetMenuUI();
 			if (rootMenu != NULL)
 			{
 				CMenuElementUI* pNew = new CMenuElementUI;
@@ -241,6 +278,7 @@ public:
 				pSubNew->SetIconSize(16,16);
 				pNew->Add(pSubNew);
 				rootMenu->Add(pNew);
+
 				CMenuElementUI* pNew2 = new CMenuElementUI;
 				pNew2->SetName(_T("Menu_Dynamic"));
 				pNew2->SetText(_T("动态一级菜单2"));
@@ -248,7 +286,7 @@ public:
 			}
 
 			// 动态添加后重新设置菜单的大小
-			pMenu->ResizeMenu();
+			m_pMenu->ResizeMenu();
 		}
 	}
 
@@ -297,10 +335,23 @@ public:
 				CDuiString sMenuName = pMenuCmd->szName;
 				CDuiString sUserData = pMenuCmd->szUserData;
 				CDuiString sText = pMenuCmd->szText;
-				delete pMenuCmd;
-				pMenuCmd = NULL;
+				m_PaintManager.DeletePtr(pMenuCmd);
 
-				if ( sMenuName == _T("qianting")) 
+				if(sMenuName.CompareNoCase(_T("lan")) == 0)
+				{
+					static bool bEn = false;
+					if(!bEn) {
+						CResourceManager::GetInstance()->SetLanguage(_T("en"));
+					}
+					else {
+						CResourceManager::GetInstance()->SetLanguage(_T("cn_zh"));					
+					}
+					bEn = !bEn;
+					CResourceManager::GetInstance()->ReloadText();
+					InvalidateRect(m_hWnd, NULL, TRUE);
+					m_PaintManager.NeedUpdate();
+				}
+				else if (sMenuName == _T("qianting"))
 				{
 					if (bChecked)
 					{
@@ -316,6 +367,10 @@ public:
 					MessageBox(m_hWnd, sText, NULL, 0);
 				}
 			}
+			if(m_pMenu != NULL) {
+				delete m_pMenu;
+				m_pMenu = NULL;
+			}
 			bHandled = TRUE;
 			return 0;
 		}
@@ -330,5 +385,6 @@ private:
 	CButtonUI* m_pRestoreBtn;
 	CButtonUI* m_pMinBtn;
 	CButtonUI* m_pSkinBtn;
+	CMenuWnd* m_pMenu;
 	std::map<CDuiString, bool> m_MenuInfos;
 };

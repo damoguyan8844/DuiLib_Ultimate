@@ -27,7 +27,8 @@ namespace DuiLib {
 		virtual CPaintManagerUI* GetManager() const;
 		virtual void SetManager(CPaintManagerUI* pManager, CControlUI* pParent, bool bInit = true);
 		virtual CControlUI* GetParent() const;
-
+	    void setInstance(HINSTANCE instance = NULL) {m_instance = instance;};
+		
 		// 定时器
 		bool SetTimer(UINT nTimerID, UINT nElapse);
 		void KillTimer(UINT nTimerID);
@@ -35,6 +36,9 @@ namespace DuiLib {
 		// 文本相关
 		virtual CDuiString GetText() const;
 		virtual void SetText(LPCTSTR pstrText);
+
+		virtual bool IsResourceText() const;
+		virtual void SetResourceText(bool bResource);
 
 		// 图形相关
 		DWORD GetBkColor() const;
@@ -194,6 +198,7 @@ namespace DuiLib {
 		TPercentInfo m_piFloatPercent;
 		bool m_bSetPos; // 防止SetPos循环调用
 
+		bool m_bResourceText;
 		CDuiString m_sText;
 		CDuiString m_sToolTip;
 		TCHAR m_chShortcut;
@@ -214,6 +219,7 @@ namespace DuiLib {
 		SIZE m_cxyBorderRound;
 		RECT m_rcPaint;
 		RECT m_rcBorderSize;
+	    HINSTANCE m_instance;
 	};
 
 } // namespace DuiLib
