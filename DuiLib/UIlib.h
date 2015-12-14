@@ -44,6 +44,7 @@
 #include "Utils/observer_impl_base.h"
 #include "Utils/UIShadow.h"
 #include "Utils/UIDelegate.h"
+#include "Utils/DragDropImpl.h"
 #include "Core/UIDefine.h"
 #include "Core/UIResourceManager.h"
 #include "Core/UIManager.h"
@@ -82,6 +83,7 @@
 #include "Control/UIComboBox.h"
 #include "Control/UIRichEdit.h"
 #include "Control/UIDateTime.h"
+#include "Control/UIIPAddress.h"
 
 #include "Control/UIActiveX.h"
 #include "Control/UIWebBrowser.h"

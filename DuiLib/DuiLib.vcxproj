@@ -478,6 +478,7 @@
   <ItemGroup>
     <ClCompile Include="Control\UIAnimation.cpp" />
     <ClCompile Include="Control\UIGifAnim.cpp" />
+    <ClCompile Include="Control\UIIPAddress.cpp" />
     <ClCompile Include="Control\UIMenu.cpp" />
     <ClCompile Include="Core\UIResourceManager.cpp" />
     <ClCompile Include="Layout\UIAnimationTabLayout.cpp" />
@@ -492,6 +493,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ReleaseA|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="UIlib.cpp" />
+    <ClCompile Include="Utils\DragDropImpl.cpp" />
     <ClCompile Include="Utils\UIShadow.cpp" />
     <ClCompile Include="Utils\WinImplBase.cpp" />
     <ClCompile Include="Utils\stb_image.c">
@@ -565,12 +567,14 @@
   <ItemGroup>
     <ClInclude Include="Control\UIAnimation.h" />
     <ClInclude Include="Control\UIGifAnim.h" />
+    <ClInclude Include="Control\UIIPAddress.h" />
     <ClInclude Include="Control\UIMenu.h" />
     <ClInclude Include="Core\UIResourceManager.h" />
     <ClInclude Include="Layout\UIAnimationTabLayout.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="UIlib.h" />
     <ClInclude Include="Utils\downloadmgr.h" />
+    <ClInclude Include="Utils\DragDropImpl.h" />
     <ClInclude Include="Utils\FlashEventHandler.h" />
     <ClInclude Include="Utils\observer_impl_base.h" />
     <ClInclude Include="Utils\stb_image.h" />

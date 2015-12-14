@@ -40,6 +40,12 @@ namespace DuiLib {
 		virtual bool IsResourceText() const;
 		virtual void SetResourceText(bool bResource);
 
+		virtual bool IsDragEnabled() const;
+		virtual void SetDragEnable(bool bDrag);
+
+		virtual bool IsDropEnabled() const;
+		virtual void SetDropEnable(bool bDrop);
+
 		// 图形相关
 		DWORD GetBkColor() const;
 		void SetBkColor(DWORD dwBackColor);
@@ -78,6 +84,7 @@ namespace DuiLib {
 		// 位置相关
 		virtual const RECT& GetPos() const;
 		virtual void SetPos(RECT rc, bool bNeedInvalidate = true);
+		virtual void Move(SIZE szOffset, bool bNeedInvalidate = true);
 		virtual int GetWidth() const;
 		virtual int GetHeight() const;
 		virtual int GetX() const;
@@ -197,6 +204,9 @@ namespace DuiLib {
 		bool m_bFloat;
 		TPercentInfo m_piFloatPercent;
 		bool m_bSetPos; // 防止SetPos循环调用
+
+		bool m_bDragEnabled;
+		bool m_bDropEnabled;
 
 		bool m_bResourceText;
 		CDuiString m_sText;

@@ -115,15 +115,13 @@ LRESULT WindowImplBase::OnNcCalcSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	}
 
 	if ( ::IsZoomed(m_hWnd))
-	{	// 最大化时，计算当前显示器最适合宽高度
+	{
 		MONITORINFO oMonitor = {};
 		oMonitor.cbSize = sizeof(oMonitor);
 		::GetMonitorInfo(::MonitorFromWindow(*this, MONITOR_DEFAULTTONEAREST), &oMonitor);
 		CDuiRect rcWork = oMonitor.rcWork;
-		CDuiRect rcMonitor = oMonitor.rcMonitor;
-		rcWork.Offset(-oMonitor.rcMonitor.left, -oMonitor.rcMonitor.top);
-
-		pRect->top = pRect->left = 0;
+		pRect->top = rcWork.top;
+		pRect->left = rcWork.left;
 		pRect->right = pRect->left + rcWork.GetWidth();
 		pRect->bottom = pRect->top + rcWork.GetHeight();
 		return WVR_REDRAW;
@@ -331,20 +329,17 @@ LRESULT WindowImplBase::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 		}
 		break;
 	}
+	// 资源管理器接口
+	InitResource();
 
+	// 创建主窗口
 	CControlUI* pRoot=NULL;
 	if (GetResourceType()==UILIB_RESOURCE)
 	{
-		// 加载资源管理器
-		CResourceManager::GetInstance()->LoadResource(_T("IDR_RES"), _T("xml"));
-
 		STRINGorID xml(_ttoi(GetSkinFile().GetData()));
 		pRoot = builder.Create(xml, _T("xml"), this, &m_PaintManager);
 	}
 	else {
-		// 加载资源管理器
-		CResourceManager::GetInstance()->LoadResource(_T("res.xml"), NULL);
-
 		pRoot = builder.Create(GetSkinFile().GetData(), (UINT)0, this, &m_PaintManager);
 	}
 	ASSERT(pRoot);

@@ -190,8 +190,10 @@ namespace DuiLib
 		int Replace(LPCTSTR pstrFrom, LPCTSTR pstrTo);
 
 		int __cdecl Format(LPCTSTR pstrFormat, ...);
-        int __cdecl Format(LPCTSTR pstrFormat, va_list Args);
 		int __cdecl SmallFormat(LPCTSTR pstrFormat, ...);
+
+	protected:
+		int __cdecl InnerFormat(LPCTSTR pstrFormat, va_list Args);
 
 	protected:
 		LPTSTR m_pstr;

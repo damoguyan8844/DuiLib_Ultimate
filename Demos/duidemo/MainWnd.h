@@ -12,6 +12,19 @@ public:
 	}
 
 public:
+	// 初始化资源管理器
+	void InitResource()
+	{
+		if (GetResourceType()==UILIB_RESOURCE)
+		{
+			// 加载资源管理器
+			CResourceManager::GetInstance()->LoadResource(_T("IDR_RES"), _T("xml"));
+		}
+		else {
+			// 加载资源管理器
+			CResourceManager::GetInstance()->LoadResource(_T("res.xml"), NULL);
+		}	
+	}
 	void InitWindow() 
 	{
 		CSkinManager::GetSkinManager()->AddReceiver(this);
@@ -25,8 +38,8 @@ public:
 		pBrowser1->SetWebBrowserEventHandler(this);
 		CWebBrowserUI* pBrowser2 = static_cast<CWebBrowserUI*>(m_PaintManager.FindControl(_T("oneclick_browser2")));
 		pBrowser2->SetWebBrowserEventHandler(this);
-		pBrowser1->NavigateUrl(_T("http://member.yw26.com/c_register.aspx"));
-		pBrowser2->NavigateUrl(_T("https://github.com/duisharp/DuiLib_Ultimate"));
+		pBrowser1->NavigateUrl(_T("http://blog.csdn.net/duisharp"));
+		pBrowser2->NavigateUrl(_T("https://github.com/qdtroy/DuiLib_Ultimate"));
 
 		CComboUI* pFontSize = static_cast<CComboUI*>(m_PaintManager.FindControl(_T("font_size")));
 		if(pFontSize)
@@ -37,7 +50,21 @@ public:
 			pElement->SetFixedWidth(120);
 			pFontSize->Add(pElement);
 		}
-
+		CComboUI* pCombo = new CComboUI();
+		pCombo->SetName(_T("mycombo"));
+		pCombo->SetFixedWidth(80);
+		pCombo->ApplyAttributeList(m_PaintManager.GetStyle(_T("combo_style")));
+		CContainerUI* pParent = (CContainerUI*)pFontSize->GetParent();
+		pParent->Add(pCombo);
+		if(pCombo)
+		{
+			CListLabelElementUI * pElement = new CListLabelElementUI();
+			pElement->SetText(_T("动态数据"));
+			pElement->SetFixedHeight(30);
+			pElement->SetFixedWidth(120);
+			pCombo->Add(pElement);
+			pCombo->SelectItem(0);
+		}
 		CListUI* pList = static_cast<CListUI*>(m_PaintManager.FindControl(_T("listview")));
 		for(int i = 0; i < 20; i++)
 		{
@@ -48,6 +75,14 @@ public:
 			pItem->SetText(1, _T("1000"));
 			pItem->SetText(2, _T("100"));
 		}
+
+		CTreeViewUI* pTreeView = static_cast<CTreeViewUI*>(m_PaintManager.FindControl(_T("treeview")));
+		CTreeNodeUI* pItem  = new CTreeNodeUI();
+		pItem->SetFixedHeight(30);
+		pItem->SetItemText(_T("动态添加"));
+		pTreeView->Add(pItem);
+		pItem->SetAttribute(_T("itemattr"), _T("valign=&quot;center&quot;"));
+		pItem->SetAttribute(_T("Style"), _T("treeview_style"));
 	}
 
 	virtual BOOL Receive(SkinChangedParam param)
@@ -232,8 +267,21 @@ public:
 				m_pPopWnd->Create(m_hWnd, _T("透明窗口演示"), WS_POPUP | WS_VISIBLE, WS_EX_TOOLWINDOW, 0, 0, 800, 572);
 			}
 			m_pPopWnd->CenterWindow();
+		}
+		else if(sName.CompareNoCase(_T("modal_popwnd_btn")) == 0)
+		{
+			if(m_pPopWnd == NULL)
+			{
+				m_pPopWnd = new CPopWnd();
+			}
+			if(!::IsWindow(*m_pPopWnd))
+			{
+				m_pPopWnd->Create(m_hWnd, _T("透明窗口演示"), WS_POPUP | WS_VISIBLE, WS_EX_TOOLWINDOW, 0, 0, 800, 572);
+			}
+			m_pPopWnd->CenterWindow();
 			m_pPopWnd->ShowModal();
 		}
+
 		else if(sName.CompareNoCase(_T("qqgroup_btn")) == 0)
 		{
 			TCHAR szPath[MAX_PATH] ={0};

@@ -505,9 +505,9 @@ namespace DuiLib {
 		RECT rcCorner = {0};
 		DWORD dwMask = 0;
 		BYTE bFade = 0xFF;
-		BOOL bHole = FALSE;
-		BOOL bTiledX = TRUE;
-		BOOL bTiledY = TRUE;
+		bool bHole = false;
+		bool bTiledX = true;
+		bool bTiledY = true;
 		CDuiSize szIcon(0,0);
 
 		int image_count = 0;
@@ -1406,9 +1406,18 @@ namespace DuiLib {
 		{
 			HFONT hOldFont = (HFONT)::SelectObject(hDC, pManager->GetFont(iFont));
 			Gdiplus::Graphics graphics( hDC );
-			Gdiplus::Font font(hDC);
-
-			graphics.SetTextRenderingHint(Gdiplus::TextRenderingHintSystemDefault);
+			Gdiplus::Font font(hDC, pManager->GetFont(iFont));
+			Gdiplus::TextRenderingHint trh = Gdiplus::TextRenderingHintSystemDefault;
+			switch(pManager->GetGdiplusTextRenderingHint()) 
+			{
+			case 0: {trh = Gdiplus::TextRenderingHintSystemDefault; break;}
+			case 1: {trh = Gdiplus::TextRenderingHintSingleBitPerPixelGridFit; break;}
+			case 2: {trh = Gdiplus::TextRenderingHintSingleBitPerPixel; break;}
+			case 3: {trh = Gdiplus::TextRenderingHintAntiAliasGridFit; break;}
+			case 4: {trh = Gdiplus::TextRenderingHintAntiAlias; break;}
+			case 5: {trh = Gdiplus::TextRenderingHintClearTypeGridFit; break;}
+			}
+			graphics.SetTextRenderingHint(trh);
 			graphics.SetSmoothingMode(Gdiplus::SmoothingModeHighQuality); 
 			graphics.SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBicubic);
 

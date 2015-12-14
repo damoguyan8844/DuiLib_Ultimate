@@ -259,6 +259,12 @@ void CListUI::SetPos(RECT rc, bool bNeedInvalidate)
 
 }
 
+void CListUI::Move(SIZE szOffset, bool bNeedInvalidate)
+{
+	CVerticalLayoutUI::Move(szOffset, bNeedInvalidate);
+	if( !m_pHeader->IsVisible() ) m_pHeader->Move(szOffset, false);
+}
+
 void CListUI::DoEvent(TEventUI& event)
 {
     if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND ) {
@@ -2005,7 +2011,6 @@ void CListLabelElementUI::DoEvent(TEventUI& event)
 	if( event.Type == UIEVENT_BUTTONDOWN || event.Type == UIEVENT_RBUTTONDOWN )
 	{
 		if( IsEnabled() ){
-			//           m_pManager->SendNotify(this, DUI_MSGTYPE_ITEMCLICK);
 			Select();
 			Invalidate();
 		}
@@ -2159,6 +2164,7 @@ LPCTSTR CListTextElementUI::GetText(int iIndex) const
 void CListTextElementUI::SetText(int iIndex, LPCTSTR pstrText)
 {
     if( m_pOwner == NULL ) return;
+
     TListInfoUI* pInfo = m_pOwner->GetListInfo();
     if( iIndex < 0 || iIndex >= pInfo->nColumns ) return;
     while( m_aTexts.GetSize() < pInfo->nColumns ) { m_aTexts.Add(NULL); }
@@ -2166,11 +2172,10 @@ void CListTextElementUI::SetText(int iIndex, LPCTSTR pstrText)
     CDuiString* pText = static_cast<CDuiString*>(m_aTexts[iIndex]);
     if( (pText == NULL && pstrText == NULL) || (pText && *pText == pstrText) ) return;
 
-	if ( pText ) //by cddjr 2011/10/20
-		pText->Assign(pstrText);
-	else
-		m_aTexts.SetAt(iIndex, new CDuiString(pstrText));
-    Invalidate();
+	if ( pText ) {delete pText; pText = NULL;}
+	m_aTexts.SetAt(iIndex, new CDuiString(pstrText));
+    
+	Invalidate();
 }
 
 void CListTextElementUI::SetOwner(CControlUI* pOwner)
@@ -2469,7 +2474,6 @@ void CListContainerElementUI::DoEvent(TEventUI& event)
 	if( event.Type == UIEVENT_BUTTONDOWN || event.Type == UIEVENT_RBUTTONDOWN )
 	{
 		if( IsEnabled() ){
-			//           m_pManager->SendNotify(this, DUI_MSGTYPE_ITEMCLICK);
 			Select();
 			Invalidate();
 		}

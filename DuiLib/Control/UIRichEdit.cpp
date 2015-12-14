@@ -1781,7 +1781,7 @@ void CRichEditUI::OnTxNotify(DWORD iNotify, void *pv)
 	case EN_SAVECLIPBOARD:   
 	case EN_SELCHANGE:   
 	case EN_STOPNOUNDO:   
-	case EN_LINK:   
+	case EN_LINK:
 	case EN_OBJECTPOSITIONS:   
 	case EN_DRAGDROPDONE:   
 		{
@@ -2251,6 +2251,22 @@ void CRichEditUI::SetPos(RECT rc, bool bNeedInvalidate)
 				rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
 			}
 		}
+	}
+}
+
+void CRichEditUI::Move(SIZE szOffset, bool bNeedInvalidate)
+{
+	CContainerUI::Move(szOffset, bNeedInvalidate);
+	if( m_pTwh != NULL ) {
+		RECT rc = m_rcItem;
+		rc.left += m_rcInset.left;
+		rc.top += m_rcInset.top;
+		rc.right -= m_rcInset.right;
+		rc.bottom -= m_rcInset.bottom;
+
+		if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) rc.right -= m_pVerticalScrollBar->GetFixedWidth();
+		if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
+		m_pTwh->SetClientRect(&rc);
 	}
 }
 

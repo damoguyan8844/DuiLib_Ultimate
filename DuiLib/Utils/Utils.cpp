@@ -705,78 +705,13 @@ namespace DuiLib
 		return nCount;
 	}
     
-    int CDuiString::Format(LPCTSTR pstrFormat, va_list Args)
-    {
-#if _MSC_VER <= 1400
-
-        TCHAR *szBuffer = NULL;
-        int size = 512, nLen, counts;
-
-        //
-        //  allocate with init size
-        //
-
-        szBuffer = (TCHAR*)malloc(size);
-        ZeroMemory(szBuffer, size);
-
-        while (TRUE){
-            counts = size / sizeof(TCHAR);
-            nLen = _vsntprintf (szBuffer, counts, pstrFormat, Args);
-            if (nLen != -1 && nLen < counts){
-                break;
-            }
-
-            //
-            //  expand the buffer.
-            //
-
-            if (nLen == -1){
-                size *= 2;
-            }else{
-                size += 1 * sizeof(TCHAR);
-            }
-
-
-            //
-            //  realloc the buffer.
-            //
-
-            if ((szBuffer = (TCHAR*)realloc(szBuffer, size)) != NULL){
-                ZeroMemory(szBuffer, size);
-            }else{
-                break;
-            }
-
-        }
-
-        Assign(szBuffer);
-        free(szBuffer);
-        return nLen;
-#else
-        int nLen, totalLen;
-        TCHAR *szBuffer;
-
-        nLen = _vsntprintf(NULL, 0, pstrFormat, Args);
-        totalLen = (nLen + 1)*sizeof(TCHAR);
-        szBuffer = (TCHAR*)malloc(totalLen);
-        ZeroMemory(szBuffer, totalLen);
-        nLen = _vsntprintf(szBuffer, nLen + 1, pstrFormat, Args);
-
-        Assign(szBuffer);
-        free(szBuffer);
-
-        return nLen;
-
-#endif
-    }
-
     int CDuiString::Format(LPCTSTR pstrFormat, ...)
     {
         int nRet;
         va_list Args;
 
         va_start(Args, pstrFormat);
-        nRet = Format(pstrFormat, Args);
+        nRet = InnerFormat(pstrFormat, Args);
         va_end(Args);
 
         return nRet;
@@ -794,6 +729,50 @@ namespace DuiLib
 		Assign(szBuffer);
 		return iRet;
 	}
+	
+    int CDuiString::InnerFormat(LPCTSTR pstrFormat, va_list Args)
+    {
+#if _MSC_VER <= 1400
+        TCHAR *szBuffer = NULL;
+        int size = 512, nLen, counts;
+        szBuffer = (TCHAR*)malloc(size);
+        ZeroMemory(szBuffer, size);
+        while (TRUE){
+            counts = size / sizeof(TCHAR);
+            nLen = _vsntprintf (szBuffer, counts, pstrFormat, Args);
+            if (nLen != -1 && nLen < counts){
+                break;
+            }
+            if (nLen == -1){
+                size *= 2;
+            }else{
+                size += 1 * sizeof(TCHAR);
+            }
+
+            if ((szBuffer = (TCHAR*)realloc(szBuffer, size)) != NULL){
+                ZeroMemory(szBuffer, size);
+            }else{
+                break;
+            }
+        }
+
+        Assign(szBuffer);
+        free(szBuffer);
+        return nLen;
+#else
+        int nLen, totalLen;
+        TCHAR *szBuffer;
+        nLen = _vsntprintf(NULL, 0, pstrFormat, Args);
+        totalLen = (nLen + 1)*sizeof(TCHAR);
+        szBuffer = (TCHAR*)malloc(totalLen);
+        ZeroMemory(szBuffer, totalLen);
+        nLen = _vsntprintf(szBuffer, nLen + 1, pstrFormat, Args);
+        Assign(szBuffer);
+        free(szBuffer);
+        return nLen;
+
+#endif
+    }
 
 	/////////////////////////////////////////////////////////////////////////////
 	//
